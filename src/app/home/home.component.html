@@ -1,0 +1,29 @@
+<mat-toolbar color="primary">
+  <mat-toolbar-row>
+    <button mat-button (click)="logout()">Sing out</button>
+  </mat-toolbar-row>
+</mat-toolbar>
+
+<div class="home-container">
+  <section>
+    <h3>Programming Languages</h3>
+    <ul>
+      <li *ngFor="let pl of programmingLangs">
+        <mat-card>{{pl.name}}</mat-card>
+      </li>
+    </ul>
+    <mat-spinner *ngIf="spinners.pl" [color]="'primary'" [diameter]="'30'" [mode]="'indeterminate'" [value]="'20'">
+    </mat-spinner>
+  </section>
+
+  <section>
+    <h3>Operative Systems</h3>
+    <ul>
+      <li *ngFor="let os of oss">
+        <mat-card>{{os.name}}</mat-card>
+      </li>
+    </ul>
+    <mat-spinner *ngIf="spinners.os" [color]="'primary'" [diameter]="'30'" [mode]="'indeterminate'" [value]="'20'">
+    </mat-spinner>
+  </section>
+</div>

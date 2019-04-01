@@ -1,0 +1,36 @@
+.login-container {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+}
+
+.login-card {
+    margin-top: 15rem;
+    width: 350px;
+    height: 350px;
+}
+
+.login-card mat-card-content {
+    margin-top: 30px;
+}
+
+.login-card form {
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    align-items: center;
+}
+
+.login-card form mat-form-field, .login-card form .login-failed  {
+    width: 90%;
+}
+
+.login-card form .form-actions {
+    margin-top: 50px;
+}
+
+.login-card form .login-failed {
+    color: red;
+    text-align: left;
+}

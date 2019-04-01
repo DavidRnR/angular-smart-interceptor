@@ -1,0 +1,23 @@
+<div class="login-container">
+  <mat-card *ngIf="loginForm" class="login-card">
+    <mat-card-header>
+      <mat-card-title>Login</mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+      <form [formGroup]="loginForm" (ngSubmit)="login()">
+        <mat-form-field>
+          <input matInput placeholder="Email" formControlName="email">
+        </mat-form-field>
+        <mat-form-field>
+          <input matInput placeholder="Password" type="password" formControlName="password">
+        </mat-form-field>
+        <section class="login-failed" *ngIf="loginFailed">Something went wrong</section>
+        <section class="form-actions">
+          <button *ngIf="!spinner" mat-raised-button color="primary" type="submit">Log In</button>
+          <mat-spinner *ngIf="spinner" [color]="'primary'" [diameter]="'30'" [mode]="'indeterminate'" [value]="'20'">
+          </mat-spinner>
+        </section>
+      </form>
+    </mat-card-content>
+  </mat-card>
+</div>
