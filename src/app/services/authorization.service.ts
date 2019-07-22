@@ -14,7 +14,7 @@ export interface TokenResponse {
 })
 export class AuthorizationService {
 
-  constructor(public apiService: ApiService, private router: Router) {
+  constructor(private apiService: ApiService, private router: Router) {
   }
 
   login(email: string, password: string): Observable<any> {

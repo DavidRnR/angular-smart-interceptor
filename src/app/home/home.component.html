@@ -8,22 +8,22 @@
   <section>
     <h3>Programming Languages</h3>
     <ul>
-      <li *ngFor="let pl of programmingLangs">
+      <li *ngFor="let pl of programmingLangs | async">
         <mat-card>{{pl.name}}</mat-card>
       </li>
     </ul>
-    <mat-spinner *ngIf="spinners.pl" [color]="'primary'" [diameter]="'30'" [mode]="'indeterminate'" [value]="'20'">
+    <mat-spinner *ngIf="!(programmingLangs | async)" [color]="'primary'" [diameter]="'30'" [mode]="'indeterminate'" [value]="'20'">
     </mat-spinner>
   </section>
 
   <section>
     <h3>Operative Systems</h3>
     <ul>
-      <li *ngFor="let os of oss">
+      <li *ngFor="let os of oss | async">
         <mat-card>{{os.name}}</mat-card>
       </li>
     </ul>
-    <mat-spinner *ngIf="spinners.os" [color]="'primary'" [diameter]="'30'" [mode]="'indeterminate'" [value]="'20'">
+    <mat-spinner *ngIf="!(oss | async)" [color]="'primary'" [diameter]="'30'" [mode]="'indeterminate'" [value]="'20'">
     </mat-spinner>
   </section>
 </div>

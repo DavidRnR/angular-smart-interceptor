@@ -1,6 +1,7 @@
 import { AuthorizationService } from './../services/authorization.service';
 import { Component, OnInit } from '@angular/core';
 import { ProgrammingLang, DataService, OS } from '../services/data.service';
+import { Observable } from 'rxjs';
 
 @Component({
   selector: 'app-home',
@@ -9,13 +10,9 @@ import { ProgrammingLang, DataService, OS } from '../services/data.service';
 })
 export class HomeComponent implements OnInit {
 
-  programmingLangs: ProgrammingLang[];
-  oss: OS[];
+  programmingLangs: Observable<ProgrammingLang[]>;
+  oss: Observable<OS[]>;
 
-  spinners = {
-    pl: false,
-    os: false
-  };
   constructor(private dataService: DataService, private authorizationService: AuthorizationService) { }
 
   ngOnInit() {
@@ -28,20 +25,10 @@ export class HomeComponent implements OnInit {
   }
 
   private getProgrammingLangs() {
-    this.spinners.pl = true;
-
-    this.dataService.getProgrammingLang().subscribe((pls: ProgrammingLang[]) => {
-      this.programmingLangs = pls;
-      this.spinners.pl = false;
-    });
+    this.programmingLangs = this.dataService.getProgrammingLang();
   }
 
   private getOSs() {
-    this.spinners.os = true;
-
-    this.dataService.getOSs().subscribe((oss: OS[]) => {
-      this.oss = oss;
-      this.spinners.os = false;
-    });
+    this.oss = this.dataService.getOSs();
   }
 }

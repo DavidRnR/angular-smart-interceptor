@@ -4,11 +4,11 @@ import { ApiService } from './api.service';
 import { EndpointsConstant } from './endpoints.constant';
 
 export interface ProgrammingLang {
-    _id?: string;
-    name: string;
-    createdAt?: Date;
-    updatedAt?: Date;
-    __v?: number;
+  _id?: string;
+  name: string;
+  createdAt?: Date;
+  updatedAt?: Date;
+  __v?: number;
 }
 
 export interface OS {
@@ -22,30 +22,36 @@ export interface OS {
 @Injectable()
 export class DataService {
 
-  constructor(public apiService: ApiService) {
+  constructor(private apiService: ApiService) {
   }
 
-  getProgrammingLang(): Observable<any> {
+  getProgrammingLang(): Observable<ProgrammingLang[]> {
 
-    const subject = new Subject();
+    const subject = new Subject<ProgrammingLang[]>();
 
     this.apiService.httpGet(EndpointsConstant.APP_PROGRAMMINGLANG).subscribe((pls: ProgrammingLang[]) => {
       subject.next(pls);
     }, (err) => {
       console.error(err);
+      subject.error(err);
+    }, () => {
+      subject.complete();
     });
 
     return subject.asObservable();
   }
 
-  getOSs(): Observable<any> {
+  getOSs(): Observable<OS[]> {
 
-    const subject = new Subject();
+    const subject = new Subject<OS[]>();
 
     this.apiService.httpGet(EndpointsConstant.APP_OS).subscribe((oss: OS[]) => {
       subject.next(oss);
     }, (err) => {
       console.error(err);
+      subject.error(err);
+    }, () => {
+      subject.complete();
     });
 
     return subject.asObservable();

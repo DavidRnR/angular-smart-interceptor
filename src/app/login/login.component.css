@@ -3,16 +3,16 @@
     height: 100%;
     display: flex;
     justify-content: center;
+    align-items: center;
 }
 
 .login-card {
-    margin-top: 15rem;
     width: 350px;
     height: 350px;
 }
 
 .login-card mat-card-content {
-    margin-top: 30px;
+    margin-top: 2em;
 }
 
 .login-card form {
@@ -27,7 +27,7 @@
 }
 
 .login-card form .form-actions {
-    margin-top: 50px;
+    margin-top: 3em;
 }
 
 .login-card form .login-failed {
