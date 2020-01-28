@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpRequest, HttpHandler, HttpEvent, HttpInterceptor, HttpClient } from '@angular/common/http';
-import { Observable, throwError, Subject } from 'rxjs';
+import { Observable, throwError, Subject, BehaviorSubject, Subscription } from 'rxjs';
 import { catchError, map, flatMap } from 'rxjs/operators';
 import { EndpointsConstant } from './../services/endpoints.constant';
 import { environment } from './../../environments/environment';
@@ -10,7 +10,7 @@ import { environment } from './../../environments/environment';
   })
 export class ErrorInterceptor implements HttpInterceptor {
 
-    private static accessTokenError = false;
+    private static accessTokenError$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
 
     constructor(private httpClient: HttpClient) { }
 
@@ -19,9 +19,9 @@ export class ErrorInterceptor implements HttpInterceptor {
 
             if (err.status === 401) {
 
-                if (!ErrorInterceptor.accessTokenError) {
+                if (!ErrorInterceptor.accessTokenError$.getValue()) {
 
-                    ErrorInterceptor.accessTokenError = true;
+                    ErrorInterceptor.accessTokenError$.next(true);
 
                     const body = {
                         refresh_token: localStorage.getItem('refresh_token'),
@@ -37,7 +37,7 @@ export class ErrorInterceptor implements HttpInterceptor {
                             localStorage.setItem('access_token', event.access_token);
                             localStorage.setItem('refresh_token', event.refresh_token);
 
-                            ErrorInterceptor.accessTokenError = false;
+                            ErrorInterceptor.accessTokenError$.next(false);
                             // Clone the request with new Access Token
                             const newRequest = request.clone({
                                 setHeaders: {
@@ -87,28 +87,16 @@ export class ErrorInterceptor implements HttpInterceptor {
         }));
     }
 
-
     // Wait until get the new access/refresh token
     private waitNewTokens(): Observable<any> {
         const subject = new Subject<any>();
-
-        const wait = (callback) => {
-
-            setTimeout(() => {
-                if (ErrorInterceptor.accessTokenError) {
-                    wait(callback);
-                } else {
-                    if (callback !== undefined) {
-                        callback();
-                    }
-                    return;
-                }
-            }, 200);
-        };
-
-        wait(() => {
-            subject.next();
+        const waitToken$: Subscription = ErrorInterceptor.accessTokenError$.subscribe((error: boolean) => {
+            if(!error) {
+                subject.next();
+                waitToken$.unsubscribe();
+            }
         });
         return subject.asObservable();
     }
+
 }

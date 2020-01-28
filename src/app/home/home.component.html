@@ -7,23 +7,28 @@
 <div class="home-container">
   <section>
     <h3>Programming Languages</h3>
-    <ul>
-      <li *ngFor="let pl of programmingLangs | async">
-        <mat-card>{{pl.name}}</mat-card>
-      </li>
-    </ul>
-    <mat-spinner *ngIf="!(programmingLangs | async)" [color]="'primary'" [diameter]="'30'" [mode]="'indeterminate'" [value]="'20'">
-    </mat-spinner>
+    <div *ngIf="programmingLangs$ | async as programmingLangs">
+      <ul>
+        <li *ngFor="let pl of programmingLangs">
+          <mat-card>{{pl.name}}</mat-card>
+        </li>
+      </ul>
+      <mat-spinner *ngIf="!programmingLangs" [color]="'primary'" [diameter]="'30'" [mode]="'indeterminate'"
+        [value]="'20'">
+      </mat-spinner>
+    </div>
   </section>
 
   <section>
     <h3>Operative Systems</h3>
-    <ul>
-      <li *ngFor="let os of oss | async">
-        <mat-card>{{os.name}}</mat-card>
-      </li>
-    </ul>
-    <mat-spinner *ngIf="!(oss | async)" [color]="'primary'" [diameter]="'30'" [mode]="'indeterminate'" [value]="'20'">
-    </mat-spinner>
+    <div *ngIf="oss$ | async as oss">
+      <ul>
+        <li *ngFor="let os of oss">
+          <mat-card>{{os.name}}</mat-card>
+        </li>
+      </ul>
+      <mat-spinner *ngIf="!oss" [color]="'primary'" [diameter]="'30'" [mode]="'indeterminate'" [value]="'20'">
+      </mat-spinner>
+    </div>
   </section>
 </div>
