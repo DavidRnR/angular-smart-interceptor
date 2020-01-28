@@ -2,7 +2,7 @@ import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 import {
   MatInputModule, MatCardModule, MatFormFieldModule,
-  MatProgressSpinnerModule, MatButtonModule, MatListModule, MatToolbarModule, MatProgressBarModule
+  MatProgressSpinnerModule, MatButtonModule, MatToolbarModule, MatProgressBarModule
 } from '@angular/material';
 import { ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
@@ -42,7 +42,6 @@ import { DataService } from './services/data.service';
     MatFormFieldModule,
     MatProgressSpinnerModule,
     MatProgressBarModule,
-    MatListModule,
     MatToolbarModule
   ],
   providers: [
