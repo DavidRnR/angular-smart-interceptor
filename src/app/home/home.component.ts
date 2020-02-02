@@ -10,25 +10,22 @@ import { Observable } from 'rxjs';
 })
 export class HomeComponent implements OnInit {
 
-  programmingLangs: Observable<ProgrammingLang[]>;
-  oss: Observable<OS[]>;
+  programmingLangs$: Observable<ProgrammingLang[]>;
+  oss$: Observable<OS[]>;
 
   constructor(private dataService: DataService, private authorizationService: AuthorizationService) { }
 
   ngOnInit() {
-    this.getProgrammingLangs();
-    this.getOSs();
+    this.loadData();
   }
 
   logout() {
     this.authorizationService.logout();
   }
 
-  private getProgrammingLangs() {
-    this.programmingLangs = this.dataService.getProgrammingLang();
+  private loadData() {
+    this.programmingLangs$ = this.dataService.getProgrammingLang();
+    this.oss$ = this.dataService.getOSs();
   }
-
-  private getOSs() {
-    this.oss = this.dataService.getOSs();
-  }
+ 
 }
