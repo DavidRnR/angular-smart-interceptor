@@ -12,7 +12,6 @@ export class HomeComponent implements OnInit {
 
   programmingLangs$: Observable<ProgrammingLang[]>;
   oss$: Observable<OS[]>;
-  oss2$: Observable<OS[]>;
 
   constructor(private dataService: DataService, private authorizationService: AuthorizationService) { }
 
@@ -27,7 +26,6 @@ export class HomeComponent implements OnInit {
   private loadData() {
     this.programmingLangs$ = this.dataService.getProgrammingLang();
     this.oss$ = this.dataService.getOSs();
-    this.oss2$ = this.dataService.getOSs();
   }
  
 }
