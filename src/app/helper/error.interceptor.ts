@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpRequest, HttpHandler, HttpEvent, HttpInterceptor, HttpClient } from '@angular/common/http';
 import { Observable, throwError, Subject, BehaviorSubject, Subscription } from 'rxjs';
-import { catchError, map, flatMap } from 'rxjs/operators';
+import { catchError, switchMap } from 'rxjs/operators';
 import { EndpointsConstant } from './../services/endpoints.constant';
 import { environment } from './../../environments/environment';
 
@@ -32,7 +32,7 @@ export class ErrorInterceptor implements HttpInterceptor {
 
                     // Call API and get a New Access Token
                     return this.httpClient.post(url, body).pipe(
-                        flatMap((event: any) => {
+                        switchMap((event: any) => {
                             // Save new Tokens
                             localStorage.setItem('access_token', event.access_token);
                             localStorage.setItem('refresh_token', event.refresh_token);
@@ -44,34 +44,26 @@ export class ErrorInterceptor implements HttpInterceptor {
                                     Authorization: `Bearer ${localStorage.getItem('access_token')}`
                                 }
                             });
-                            return next.handle(newRequest).pipe(
-                                map((evt: HttpEvent<any>) => {
-                                    return evt;
-                                })
-                            );
+                            return next.handle(newRequest);
                         }),
                         catchError(er => {
                             localStorage.clear();
                             location.reload(true);
-                            return Observable.throw(er);
+                            return throwError(er);
                         })
                     );
                 } else {
 
                     // If it's not the firt error, it has to wait until get the access/refresh token
                     return this.waitNewTokens().pipe(
-                        flatMap((event: any) => {
+                        switchMap((event: any) => {
                             // Clone the request with new Access Token
                             const newRequest = request.clone({
                                 setHeaders: {
                                     Authorization: `Bearer ${localStorage.getItem('access_token')}`
                                 }
                             });
-                            return next.handle(newRequest).pipe(
-                                map((evt: HttpEvent<any>) => {
-                                    return evt;
-                                })
-                            );
+                            return next.handle(newRequest);
                         })
                     );
                 }
