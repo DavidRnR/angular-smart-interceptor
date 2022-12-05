@@ -48,7 +48,7 @@ export class ErrorInterceptor implements HttpInterceptor {
                         }),
                         catchError(er => {
                             localStorage.clear();
-                            location.reload(true);
+                            location.reload();
                             return throwError(er);
                         })
                     );
@@ -70,7 +70,7 @@ export class ErrorInterceptor implements HttpInterceptor {
             } else if (err.status === 403) {
                 // Logout if 403 response - Refresh Token invalid
                 localStorage.clear();
-                location.reload(true);
+                location.reload();
             }
 
             const error = err.error.message || err.statusText;
