@@ -1,25 +1,24 @@
-import { Injectable } from '@angular/core';
-import { HttpRequest, HttpHandler, HttpEvent, HttpInterceptor } from '@angular/common/http';
+import { HttpRequest, HttpHandlerFn, HttpEvent } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { StorageConstants } from '../constants/storage.constants';
 
-@Injectable({
-    providedIn: 'root'
-  })
-export class MainInterceptor implements HttpInterceptor {
+export function mainInterceptor(
+  request: HttpRequest<any>,
+  next: HttpHandlerFn
+): Observable<HttpEvent<any>> {
+  // Add authorization header with Token if available
+  if (
+    localStorage.getItem(StorageConstants.EMAIL) &&
+    localStorage.getItem(StorageConstants.ACCESS_TOKEN)
+  ) {
+    request = request.clone({
+      setHeaders: {
+        Authorization: `Bearer ${localStorage.getItem(
+          StorageConstants.ACCESS_TOKEN
+        )}`,
+      },
+    });
+  }
 
-    constructor() {
-    }
-    intercept(request: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
-
-        // Add authorization header with Token if available
-        if (localStorage.getItem('email') && localStorage.getItem('access_token')) {
-            request = request.clone({
-                setHeaders: {
-                    Authorization: `Bearer ${localStorage.getItem('access_token')}`
-                }
-            });
-
-        }
-        return next.handle(request);
-    }
+  return next(request);
 }

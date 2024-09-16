@@ -1,5 +1,6 @@
 <div class="login-container">
-  <mat-card *ngIf="loginForm" class="login-card">
+  @if (loginForm) {
+  <mat-card class="login-card">
     <mat-card-header>
       <mat-card-title>Login</mat-card-title>
     </mat-card-header>
@@ -11,13 +12,20 @@
         <mat-form-field>
           <input matInput placeholder="Password" type="password" formControlName="password">
         </mat-form-field>
-        <section class="login-failed" *ngIf="loginFailed">Something went wrong</section>
+        @if(loginFailed) {
+        <section class="login-failed">Something went wrong</section>
+        }
         <section class="form-actions">
-          <button *ngIf="!spinner" mat-raised-button color="primary" type="submit">Log In</button>
-          <mat-spinner *ngIf="spinner" [color]="'primary'" [diameter]="'30'" [mode]="'indeterminate'" [value]="'20'">
-          </mat-spinner>
+          @if(spinner) {
+          <mat-progress-spinner [color]="'primary'" [diameter]="'30'" [mode]="'indeterminate'" [value]="'20'">
+          </mat-progress-spinner>
+          } @else {
+          <button mat-flat-button color="primary" type="submit">Log In</button>
+          }
         </section>
       </form>
     </mat-card-content>
   </mat-card>
+  }
+
 </div>

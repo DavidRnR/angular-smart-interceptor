@@ -9,6 +9,7 @@
 .login-card {
     width: 350px;
     height: 350px;
+    box-shadow: none;
 }
 
 .login-card mat-card-content {

@@ -1,94 +1,112 @@
-import { Injectable } from '@angular/core';
-import { HttpRequest, HttpHandler, HttpEvent, HttpInterceptor, HttpClient } from '@angular/common/http';
-import { Observable, throwError, Subject, BehaviorSubject, Subscription } from 'rxjs';
+import { inject } from '@angular/core';
+import {
+  HttpRequest,
+  HttpHandlerFn,
+  HttpEvent,
+  HttpClient,
+} from '@angular/common/http';
+import {
+  Observable,
+  throwError,
+  Subject,
+  BehaviorSubject,
+  Subscription,
+} from 'rxjs';
 import { catchError, switchMap } from 'rxjs/operators';
 import { EndpointsConstant } from './../services/endpoints.constant';
 import { environment } from './../../environments/environment';
+import { StorageConstants } from '../constants/storage.constants';
 
-@Injectable({
-    providedIn: 'root'
-  })
-export class ErrorInterceptor implements HttpInterceptor {
+const accessTokenError$: BehaviorSubject<boolean> =
+  new BehaviorSubject<boolean>(false);
 
-    private static accessTokenError$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
+export function errorInterceptor(
+  request: HttpRequest<any>,
+  next: HttpHandlerFn
+): Observable<HttpEvent<any>> {
+  const httpClient = inject(HttpClient);
+  return next(request).pipe(
+    catchError((err) => {
+      if (err.status === 401) {
+        if (!accessTokenError$.getValue()) {
+          accessTokenError$.next(true);
 
-    constructor(private httpClient: HttpClient) { }
+          const body = {
+            refreshToken: localStorage.getItem(StorageConstants.REFRESH_TOKEN),
+            email: localStorage.getItem(StorageConstants.EMAIL),
+          };
 
-    intercept(request: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
-        return next.handle(request).pipe(catchError(err => {
+          const url = environment.apiURL + EndpointsConstant.AUTH_TOKEN;
 
-            if (err.status === 401) {
+          // Call API and get a New Access Token
+          return httpClient.post(url, body).pipe(
+            switchMap((event: any) => {
+              // Save new Tokens
+              localStorage.setItem(
+                StorageConstants.ACCESS_TOKEN,
+                event.accessToken
+              );
+              localStorage.setItem(
+                StorageConstants.REFRESH_TOKEN,
+                event.refreshToken
+              );
 
-                if (!ErrorInterceptor.accessTokenError$.getValue()) {
+              accessTokenError$.next(false);
+              // Clone the request with new Access Token
+              const newRequest = request.clone({
+                setHeaders: {
+                  Authorization: `Bearer ${localStorage.getItem(
+                    StorageConstants.ACCESS_TOKEN
+                  )}`,
+                },
+              });
+              return next(newRequest);
+            }),
+            catchError((er) => {
+            //   localStorage.clear();
+            //   location.reload();
+              return throwError(er);
+            })
+          );
+        } else {
+          // If it's not the firt error, it has to wait until get the access/refresh token
+          return waitNewTokens().pipe(
+            switchMap((event: any) => {
+              // Clone the request with new Access Token
+              const newRequest = request.clone({
+                setHeaders: {
+                  Authorization: `Bearer ${localStorage.getItem(
+                    StorageConstants.ACCESS_TOKEN
+                  )}`,
+                },
+              });
+              return next(newRequest);
+            })
+          );
+        }
+      } else if (err.status === 403) {
+        // Logout if 403 response - Refresh Token invalid
+        // localStorage.clear();
+        // location.reload();
+      }
 
-                    ErrorInterceptor.accessTokenError$.next(true);
+      const error = err.error.message || err.statusText;
 
-                    const body = {
-                        refresh_token: localStorage.getItem('refresh_token'),
-                        email: localStorage.getItem('email')
-                    };
+      return throwError(error);
+    })
+  );
+}
 
-                    const url = environment.apiURL + EndpointsConstant.AUTH_TOKEN;
-
-                    // Call API and get a New Access Token
-                    return this.httpClient.post(url, body).pipe(
-                        switchMap((event: any) => {
-                            // Save new Tokens
-                            localStorage.setItem('access_token', event.access_token);
-                            localStorage.setItem('refresh_token', event.refresh_token);
-
-                            ErrorInterceptor.accessTokenError$.next(false);
-                            // Clone the request with new Access Token
-                            const newRequest = request.clone({
-                                setHeaders: {
-                                    Authorization: `Bearer ${localStorage.getItem('access_token')}`
-                                }
-                            });
-                            return next.handle(newRequest);
-                        }),
-                        catchError(er => {
-                            localStorage.clear();
-                            location.reload();
-                            return throwError(er);
-                        })
-                    );
-                } else {
-
-                    // If it's not the firt error, it has to wait until get the access/refresh token
-                    return this.waitNewTokens().pipe(
-                        switchMap((event: any) => {
-                            // Clone the request with new Access Token
-                            const newRequest = request.clone({
-                                setHeaders: {
-                                    Authorization: `Bearer ${localStorage.getItem('access_token')}`
-                                }
-                            });
-                            return next.handle(newRequest);
-                        })
-                    );
-                }
-            } else if (err.status === 403) {
-                // Logout if 403 response - Refresh Token invalid
-                localStorage.clear();
-                location.reload();
-            }
-
-            const error = err.error.message || err.statusText;
-
-            return throwError(error);
-        }));
+// Wait until get the new access/refresh token
+function waitNewTokens(): Observable<any> {
+  const subject = new Subject<void>();
+  const waitToken$: Subscription = accessTokenError$.subscribe(
+    (error: boolean) => {
+      if (!error) {
+        subject.next();
+        waitToken$.unsubscribe();
+      }
     }
-
-    // Wait until get the new access/refresh token
-    private waitNewTokens(): Observable<any> {
-        const subject = new Subject<any>();
-        const waitToken$: Subscription = ErrorInterceptor.accessTokenError$.subscribe((error: boolean) => {
-            if(!error) {
-                subject.next();
-                waitToken$.unsubscribe();
-            }
-        });
-        return subject.asObservable();
-    }
-
+  );
+  return subject.asObservable();
 }
