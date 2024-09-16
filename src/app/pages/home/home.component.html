@@ -1,6 +1,6 @@
 <mat-toolbar color="primary">
   <mat-toolbar-row>
-    <button mat-button (click)="logout()">Sing out</button>
+    <button mat-flat-button (click)="logout()">Sing out</button>
   </mat-toolbar-row>
 </mat-toolbar>
 
@@ -8,14 +8,18 @@
   <section>
     <h3>Programming Languages</h3>
     <div *ngIf="programmingLangs$ | async as programmingLangs; else spinner">
-        <mat-card *ngFor="let pl of programmingLangs">{{pl.name}}</mat-card>
+      <mat-list *ngFor="let pl of programmingLangs">
+        <mat-list-item>{{pl.name}}</mat-list-item>
+      </mat-list>
     </div>
   </section>
 
   <section>
     <h3>Operative Systems</h3>
     <div *ngIf="oss$ | async as oss; else spinner">
-        <mat-card *ngFor="let os of oss">{{os.name}}</mat-card>
+      <mat-list *ngFor="let os of oss">
+        <mat-list-item>{{os.name}}</mat-list-item>
+      </mat-list>
     </div>
   </section>
 </div>

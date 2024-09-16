@@ -1,56 +1,50 @@
-import { Injectable } from '@angular/core';
-import { Observable, Subject } from 'rxjs';
-import { Router } from '@angular/router';
+import { inject, Injectable } from '@angular/core';
+import { Observable, tap } from 'rxjs';
 import { ApiService } from './api.service';
 import { EndpointsConstant } from './endpoints.constant';
+import { StorageConstants } from '../constants/storage.constants';
 
-export interface TokenResponse {
-  access_token: string;
-  refresh_token: string;
+interface TokenResponse {
+  accessToken: string;
+  refreshToken: string;
 }
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class AuthorizationService {
-
-  constructor(private apiService: ApiService, private router: Router) {
-  }
+  private apiService = inject(ApiService);
 
   login(email: string, password: string): Observable<any> {
     // Empty Local Storage
     localStorage.clear();
-    const subject = new Subject();
 
     const body = {
       email,
-      password
+      password,
     };
 
-    this.apiService.httpPost(EndpointsConstant.AUTH_SIGNIN, body).subscribe((tokenResponse: TokenResponse) => {
-      // Save Tokens and User in Local Storage
-      localStorage.setItem('access_token', tokenResponse.access_token);
-      localStorage.setItem('refresh_token', tokenResponse.refresh_token);
-      localStorage.setItem('email', email);
-      subject.next();
-    }, (err) => {
-      console.error(err);
-      subject.error(err);
-    }, () => {
-      subject.complete();
-    });
-
-    return subject.asObservable();
+    return this.apiService
+      .httpPost<TokenResponse>(EndpointsConstant.AUTH_SIGNIN, body)
+      .pipe(
+        tap((tokenResponse: TokenResponse) => {
+          // Save Tokens and User in Local Storage
+          localStorage.setItem(
+            StorageConstants.ACCESS_TOKEN,
+            tokenResponse.accessToken
+          );
+          localStorage.setItem(
+            StorageConstants.REFRESH_TOKEN,
+            tokenResponse.refreshToken
+          );
+          localStorage.setItem(StorageConstants.EMAIL, email);
+        })
+      );
   }
 
   logout() {
-
     // Empty Local Storage
     localStorage.clear();
-
-    // Redirect to login page
-    this.router.navigate(['/login']);
-
+    return true;
   }
-
 }

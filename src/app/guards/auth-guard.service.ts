@@ -1,19 +1,23 @@
-import { Injectable } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
 import { CanActivate, Router, ActivatedRouteSnapshot } from '@angular/router';
 import { Observable } from 'rxjs';
+import { StorageConstants } from '../constants/storage.constants';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class AuthGuard implements CanActivate {
+  private router = inject(Router);
 
-
-  constructor(private router: Router) {
-  }
-
-  canActivate(next: ActivatedRouteSnapshot): Observable<boolean> | Promise<boolean> | boolean {
-    if (localStorage.getItem('email') && localStorage.getItem('refresh_token') && localStorage.getItem('access_token')) {
-        return true;
+  canActivate(
+    next: ActivatedRouteSnapshot
+  ): Observable<boolean> | Promise<boolean> | boolean {
+    if (
+      localStorage.getItem(StorageConstants.EMAIL) &&
+      localStorage.getItem(StorageConstants.ACCESS_TOKEN) &&
+      localStorage.getItem(StorageConstants.REFRESH_TOKEN)
+    ) {
+      return true;
     }
 
     // Redirect to login page
