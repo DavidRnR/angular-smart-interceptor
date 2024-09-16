@@ -1,4 +1,4 @@
 export const environment = {
     production: true,
-    apiURL: 'https://smart-interceptor-backend-production.up.railway.app/api/',
+    apiURL: 'http:localhost:5000/api/',
 };
