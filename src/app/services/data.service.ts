@@ -1,5 +1,4 @@
-import { inject, Injectable } from '@angular/core';
-import { Observable } from 'rxjs';
+import { inject, Injectable, signal } from '@angular/core';
 import { ApiService } from './api.service';
 import { EndpointsConstant } from './endpoints.constant';
 
@@ -23,12 +22,20 @@ export interface OS {
 export class DataService {
   private apiService = inject(ApiService);
 
-  getProgrammingLang(): Observable<ProgrammingLang[]> {
-    return this.apiService.httpGet<ProgrammingLang[]>(EndpointsConstant.PROGRAMMINGLANG);
+  programmingLanguages = signal<ProgrammingLang[]>([]);
+  os = signal<OS[]>([]);
+
+  loadProgrammingLang(): void {
+    this.apiService
+      .httpGet<ProgrammingLang[]>(EndpointsConstant.PROGRAMMINGLANG)
+      .subscribe((data) => {
+        this.programmingLanguages.set(data);
+      });
   }
 
-  getOSs(): Observable<OS[]> {
-    return this.apiService.httpGet<OS[]>(EndpointsConstant.OS);
+  loadOSs(): void {
+    this.apiService.httpGet<OS[]>(EndpointsConstant.OS).subscribe((data) => {
+      this.os.set(data);
+    });
   }
-
 }

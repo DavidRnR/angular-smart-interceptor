@@ -7,23 +7,11 @@
 <div class="home-container">
   <section>
     <h3>Programming Languages</h3>
-    <div *ngIf="programmingLangs$ | async as programmingLangs; else spinner">
-      <mat-list *ngFor="let pl of programmingLangs">
-        <mat-list-item>{{pl.name}}</mat-list-item>
-      </mat-list>
-    </div>
+    <app-item-list [items]="programmingLanguages()"></app-item-list>
   </section>
 
   <section>
     <h3>Operative Systems</h3>
-    <div *ngIf="oss$ | async as oss; else spinner">
-      <mat-list *ngFor="let os of oss">
-        <mat-list-item>{{os.name}}</mat-list-item>
-      </mat-list>
-    </div>
+    <app-item-list [items]="os()"></app-item-list>
   </section>
 </div>
-
-<ng-template #spinner>
-  <mat-progress-bar mode="indeterminate"></mat-progress-bar>
-</ng-template>

@@ -1,18 +1,14 @@
 mat-toolbar-row {
-    justify-content: flex-end;
+  justify-content: flex-end;
 }
 
 mat-toolbar button {
-    font-weight: bold;
+  font-weight: bold;
 }
 
 .home-container {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-    grid-gap: 1em;
-    padding: 2em;
-}
-
-mat-card {
-    margin: 0.3em 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  grid-gap: 1em;
+  padding: 2em;
 }

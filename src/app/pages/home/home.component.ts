@@ -1,14 +1,13 @@
-import { Component, inject } from '@angular/core';
-import { AuthorizationService } from './../../services/authorization.service';
-import { ProgrammingLang, DataService, OS } from '../../services/data.service';
-import { Observable } from 'rxjs';
-import { MatCard, MatCardContent } from '@angular/material/card';
+import { Component, inject, OnInit, WritableSignal } from '@angular/core';
 import { MatToolbar, MatToolbarRow } from '@angular/material/toolbar';
 import { MatProgressBar } from '@angular/material/progress-bar';
 import { CommonModule } from '@angular/common';
 import { MatButton } from '@angular/material/button';
 import { Router } from '@angular/router';
 import { MatList, MatListItem } from '@angular/material/list';
+import { AuthorizationService } from './../../services/authorization.service';
+import { ProgrammingLang, DataService, OS } from '../../services/data.service';
+import { ItemListComponent } from './components/item-list/item-list.component';
 
 @Component({
   selector: 'app-home',
@@ -18,6 +17,7 @@ import { MatList, MatListItem } from '@angular/material/list';
   providers: [DataService, AuthorizationService],
   imports: [
     CommonModule,
+    ItemListComponent,
     MatButton,
     MatList,
     MatListItem,
@@ -26,13 +26,18 @@ import { MatList, MatListItem } from '@angular/material/list';
     MatProgressBar,
   ],
 })
-export class HomeComponent {
+export class HomeComponent implements OnInit {
   dataService: DataService = inject(DataService);
   authorizationService: AuthorizationService = inject(AuthorizationService);
   router = inject(Router);
 
-  programmingLangs$: Observable<ProgrammingLang[]> = this.dataService.getProgrammingLang();
-  oss$: Observable<OS[]> = this.dataService.getOSs();
+  programmingLanguages: WritableSignal<ProgrammingLang[]> = this.dataService.programmingLanguages;
+  os: WritableSignal<OS[]> = this.dataService.os;
+
+  ngOnInit(): void {
+    this.dataService.loadProgrammingLang();
+    this.dataService.loadOSs();
+  }
 
   logout() {
     this.authorizationService.logout();
